@@ -1,12 +1,30 @@
 <?php
-#fiDoodleData V 17.05.003
-#read FormIt data from sql table 'modx_formit_forms' and parse a html data table (Bootstrap 3)
+#fiDoodleData V 17.05.005
+#read FormIt data from sql table 'modx_formit_forms' and parse a html data table
 #Note: https://docs.modx.com/extras/revo/formit/formit.hooks/formit.hooks.formitsaveform
 #
-#e.g. chunk call (qty, date2 - date5 are optional!)
-#[[!fiDoodleData? &formName=`webDoodle` &date1=`01.11.2017` &date2=`20.12.2017` &qty=`Anzahl`]]
+#e.g. chunk call with one date, qty and purecss table
+#[[!fiDoodleData?
+#  &context=`web42`
+#  &formName=`Doodle`
+#  &class=`pure-table pure-table-horizontal`
+#  &name=`Dein Name`
+#  &date1=`01.11.2017`
+#  &qty=`Anzahl`
+#]]
+# or chunk call with 3 dates and boostrap table
+#[[!fiDoodleData?
+#  &context=`web07`
+#  &formName=`Doodle`
+#  &class=`table table-striped`
+#  &date1=`01.04.2017`
+#  &date2=`22.04.2017`
+#  &date3=`06.05.2017`
+#]]
+#qty, date2 - date5 are optional!
 
-#PARAMETER
+
+#PARAMETERS
 #Field Names
 $strFN1 = $modx->getOption('id',$scriptProperties,'#');
 $strFN2 = $modx->getOption('name',$scriptProperties,'Name');
@@ -18,11 +36,12 @@ $strFN6 = $modx->getOption('date4',$scriptProperties,'');
 $strFN7 = $modx->getOption('date5',$scriptProperties,'');
 $intFNQty = $modx->getOption('qty',$scriptProperties,'');
 
-#SQL WHERE form (formName)
+#SQL WHERE context and form
+$wc = $modx->getOption('context',$scriptProperties,'web');
 $wf = $modx->getOption('formName',$scriptProperties,'');
 
 $sqlData = '';
-$sql = "SELECT * FROM modx_formit_forms WHERE form = '". $wf ."'" ;
+$sql = "SELECT * FROM modx_formit_forms WHERE context_key = '". $wc ."' AND form = '". $wf ."'";
 foreach ($modx->query($sql) as $row) {
     $sqlData .= $row['values'] .',';
 }
@@ -36,8 +55,9 @@ $sqlData = '['.$sqlData.']';
 $arr = json_decode($sqlData, true);
 $count = count($arr);
 
-$strTable = '
-<table class="table table-striped">
+$strTable = '<table class="';
+$strTable = $strTable.$class;
+$strTable = $strTable.'">
   <thead>
     <tr>
       <th>'.$strFN1.'</th>
@@ -98,7 +118,7 @@ for ($i = 0; $i < $count; $i++) {
        $strDat5 = 'Ja';
    }
 
-   #if all dates NEIN then qty = 0 !
+   #if all dates NEIN then qty is nothing !
    if($bolDat1 == 0 and $bolDat2 == 0 and $bolDat3 == 0 and $bolDat4 == 0 and $bolDat5 == 0)
    {
      $intFNQty = '-';
