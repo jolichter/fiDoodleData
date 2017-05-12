@@ -1,5 +1,5 @@
 <?php
-#fiDoodleData V 17.05.005
+#fiDoodleData V 17.05.006
 #read FormIt data from sql table 'modx_formit_forms' and parse a html data table
 #Note: https://docs.modx.com/extras/revo/formit/formit.hooks/formit.hooks.formitsaveform
 #
@@ -119,11 +119,14 @@ for ($i = 0; $i < $count; $i++) {
    }
 
    #if all dates NEIN then qty is nothing !
-   if($bolDat1 == 0 and $bolDat2 == 0 and $bolDat3 == 0 and $bolDat4 == 0 and $bolDat5 == 0)
-   {
-     $intFNQty = '-';
-   }  else {
-     $intFNQty = $arr[$i]['qty'];
+   if (!empty($intFNQty)) {
+       #if all dates NEIN then qty is nothing!
+       if($bolDat1 == 0 and $bolDat2 == 0 and $bolDat3 == 0 and $bolDat4 == 0 and $bolDat5 == 0)
+       {
+         $intFNQty = '-';
+       }  else {
+         $intFNQty = $arr[$i]['qty'];
+       }
    }
 
    $strTable = $strTable.'
