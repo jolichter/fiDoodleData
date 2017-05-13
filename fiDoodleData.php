@@ -1,20 +1,22 @@
 <?php
-#fiDoodleData V 17.05.007
+#fiDoodleData V 17.05.008
 #read FormIt data from sql table 'modx_formit_forms' and parse a html data table
 #Note: https://docs.modx.com/extras/revo/formit/formit.hooks/formit.hooks.formitsaveform
 #
 #e.g. chunk call with one date, qty and purecss table
 #[[!fiDoodleData?
-#  &context=`web42`
+#  &context=`web2`
 #  &formName=`Doodle`
 #  &class=`pure-table pure-table-horizontal`
 #  &name=`Dein Name`
 #  &date1=`01.11.2017`
 #  &qty=`Anzahl`
 #]]
+#Placeholder [[+count]] adds the qty
+#
 # or chunk call with 3 dates and boostrap table
 #[[!fiDoodleData?
-#  &context=`web07`
+#  &context=`web7`
 #  &formName=`Doodle`
 #  &class=`table table-striped`
 #  &date1=`01.04.2017`
@@ -22,7 +24,6 @@
 #  &date3=`06.05.2017`
 #]]
 #qty, date2 - date5 are optional!
-
 
 #PARAMETERS
 #Field Names
@@ -34,7 +35,7 @@ $strFN4 = $modx->getOption('date2',$scriptProperties,'');
 $strFN5 = $modx->getOption('date3',$scriptProperties,'');
 $strFN6 = $modx->getOption('date4',$scriptProperties,'');
 $strFN7 = $modx->getOption('date5',$scriptProperties,'');
-$intFNQty = $modx->getOption('qty',$scriptProperties,'');
+$strFN8 = $modx->getOption('qty',$scriptProperties,'');
 
 #SQL WHERE context and form
 $wc = $modx->getOption('context',$scriptProperties,'web');
@@ -70,7 +71,7 @@ $strTable = $strTable.'">
       if (!empty($strFN5)) $strTable = $strTable.'<th>'.$strFN5.'</th>';
       if (!empty($strFN6)) $strTable = $strTable.'<th>'.$strFN6.'</th>';
       if (!empty($strFN7)) $strTable = $strTable.'<th>'.$strFN7.'</th>';
-      if (!empty($intFNQty)) $strTable = $strTable.'<th>'.$intFNQty.'</th>';
+      if (!empty($strFN8)) $strTable = $strTable.'<th>'.$strFN8.'</th>';
 
 $strTable = $strTable.'
     </tr>
@@ -78,12 +79,14 @@ $strTable = $strTable.'
   <tbody>
 ';
 
-$c = 0;
+$r = 0; #count rows
+$q = 0; #count qty
 for ($i = 0; $i < $count; $i++) {
-   $c++;
+   $r++;
+
     $strName = $arr[$i]['name'];
     #if double escaped to &amp;amp;
-    $strName = str_replace('&amp;amp;','&',$strName);    
+    $strName = str_replace('&amp;amp;','&',$strName);
     $bolDat1 = $arr[$i]['datum1'];
     $bolDat2 = $arr[$i]['datum2'];
     $bolDat3 = $arr[$i]['datum3'];
@@ -121,19 +124,24 @@ for ($i = 0; $i < $count; $i++) {
    }
 
    #if all dates NEIN then qty is nothing !
-   if (!empty($intFNQty)) {
+   if (!empty($strFN8)) {
        #if all dates NEIN then qty is nothing!
        if($bolDat1 == 0 and $bolDat2 == 0 and $bolDat3 == 0 and $bolDat4 == 0 and $bolDat5 == 0)
        {
-         $intFNQty = '-';
+         $strFN8 = '-';
        }  else {
-         $intFNQty = $arr[$i]['qty'];
+         $strFN8 = $arr[$i]['qty'];
+
+         if (is_numeric($arr[$i]['qty'])) {
+            $q = $q + intval($arr[$i]['qty']);
+            $modx->setPlaceholder('count', $q);
+         }
        }
    }
 
    $strTable = $strTable.'
    <tr>
-     <th scope="row">'.$c.'</th>
+     <th scope="row">'.$r.'</th>
      <td>'.$strName.'</td>
      <td>'.$strDat1.'</td>
 ';
@@ -143,11 +151,10 @@ for ($i = 0; $i < $count; $i++) {
      if (!empty($strFN5)) $strTable = $strTable.'<td>'.$strDat3.'</td>';
      if (!empty($strFN6)) $strTable = $strTable.'<td>'.$strDat4.'</td>';
      if (!empty($strFN7)) $strTable = $strTable.'<td>'.$strDat5.'</td>';
-     if (!empty($intFNQty)) $strTable = $strTable.'<td>'.$intFNQty.'</td>';
+     if (!empty($strFN8)) $strTable = $strTable.'<td>'.$strFN8.'</td>';
    $strTable = $strTable.'
    </tr>
    ';
 }
 $strTable = $strTable.'</tbody></table>';
-
 return $strTable;
