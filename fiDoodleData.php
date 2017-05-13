@@ -1,5 +1,5 @@
 <?php
-#fiDoodleData V 17.05.006
+#fiDoodleData V 17.05.007
 #read FormIt data from sql table 'modx_formit_forms' and parse a html data table
 #Note: https://docs.modx.com/extras/revo/formit/formit.hooks/formit.hooks.formitsaveform
 #
@@ -82,6 +82,8 @@ $c = 0;
 for ($i = 0; $i < $count; $i++) {
    $c++;
     $strName = $arr[$i]['name'];
+    #if double escaped to &amp;amp;
+    $strName = str_replace('&amp;amp;','&',$strName);    
     $bolDat1 = $arr[$i]['datum1'];
     $bolDat2 = $arr[$i]['datum2'];
     $bolDat3 = $arr[$i]['datum3'];
