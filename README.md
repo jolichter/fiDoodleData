@@ -5,3 +5,5 @@
 
 Note:
 https://docs.modx.com/extras/revo/formit/formit.hooks/formit.hooks.formitsaveform
+
+![alt Snapshot-Frontpage](https://secure.jolichter.de/github/img/fiDoodleDataSnapshot.jpg)
