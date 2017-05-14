@@ -1,5 +1,5 @@
 <?php
-#fiDoodleData V 17.05.008
+#fiDoodleData V 17.05.009
 #read FormIt data from sql table 'modx_formit_forms' and parse a html data table
 #Note: https://docs.modx.com/extras/revo/formit/formit.hooks/formit.hooks.formitsaveform
 #
@@ -134,7 +134,6 @@ for ($i = 0; $i < $count; $i++) {
 
          if (is_numeric($arr[$i]['qty'])) {
             $q = $q + intval($arr[$i]['qty']);
-            $modx->setPlaceholder('count', $q);
          }
        }
    }
@@ -158,4 +157,5 @@ for ($i = 0; $i < $count; $i++) {
 }
 $strTable = $strTable.'</tbody></table>';
 
+$modx->setPlaceholder('count', $q);
 return $strTable;
